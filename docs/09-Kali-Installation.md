@@ -25,6 +25,10 @@ Guest:
 - Verified clipboard sharing
 - Verified automatic display resizing
 
+## Screenshot
+
+![kali.png](../screenshots/kali.png)
+
 ## Result
 
 Kali Linux installed successfully and is ready to generate attack traffic for detection in Splunk.
