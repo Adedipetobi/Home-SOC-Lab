@@ -11,7 +11,14 @@ This folder contains setup guides, installation notes, troubleshooting steps, an
 - ✅ Universal Forwarder installed
 - ✅ Log forwarding configured
 - ✅ Sysmon events successfully indexed
-- ⏳ Attack simulation
-- ⏳ Threat detection
-- ⏳ Incident response
-- ⏳ Dashboards
+- ✅ Attack simulation completed
+- ✅ Threat detection implemented
+- ✅ Incident response investigations completed
+- ✅ SOC monitoring dashboard completed
+
+## Detection Use Cases
+
+- ✅ Suspicious PowerShell execution detection
+- ✅ Windows failed-login / brute-force detection
+- ✅ MITRE ATT&CK technique mapping
+- ✅ Splunk alerting and investigation workflow
