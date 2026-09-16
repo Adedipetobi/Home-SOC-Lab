@@ -9,7 +9,9 @@ The project currently focuses on two detection scenarios:
 - Windows brute-force / repeated failed login attempts
 ---
 ## Lab Architecture
+
 The environment includes:
+
 - macOS host system
 - VMware Fusion
 - Windows 11 ARM virtual machine
@@ -17,7 +19,12 @@ The environment includes:
 - Sysmon
 - Splunk Universal Forwarder
 - Splunk Enterprise
+
 Windows security and Sysmon events are collected from the Windows VM and forwarded to Splunk for analysis.
+
+### Architecture Diagram
+
+![Home SOC Lab Architecture](diagrams/home-soc-architecture.png)
 ---
 ## Detection 1 — Suspicious PowerShell Execution
 
