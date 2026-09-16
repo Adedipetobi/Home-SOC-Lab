@@ -1,42 +1,79 @@
-# Incident Report 02 – RDP Brute-Force Detection
+# Incident Report 02 — Brute-Force Login Detection
 
-## Summary
-A simulated brute-force attack was performed against the Windows 11 VM from the Kali Linux VM. Multiple failed RDP authentication attempts were generated and detected in Splunk.
+## Incident Summary
 
-## Lab Environment
-- Attacker: Kali Linux VM
-- Target: Windows 11 VM
-- SIEM: Splunk Enterprise
-- Target service: Remote Desktop (RDP)
-- Port: TCP 3389
+A simulated brute-force authentication test was performed against the Windows 11 VM from the Kali Linux VM in the isolated Home SOC Lab environment.
 
-## Detection
-Windows recorded the failed authentication attempts as Security Event ID 4625.
+Repeated failed authentication attempts generated Windows Security Event ID `4625` events, which were collected and analyzed in Splunk Enterprise.
 
-Splunk detection query:
+The activity was intentionally generated for detection testing and SOC investigation practice.
 
-    index=* sourcetype="WinEventLog:Security" EventCode=4625
-    | stats count as Failed_Attempts by Account_Name Source_Network_Address
-    | where Failed_Attempts >= 5
-    | sort - Failed_Attempts
+## Incident Details
+
+- **Environment:** Home SOC Lab
+- **Source System:** Kali Linux VM
+- **Target System:** Windows 11 VM
+- **SIEM:** Splunk Enterprise
+- **Data Source:** Windows Security Event Log
+- **Event ID:** 4625 — Failed Logon
+- **Source IP:** `192.168.106.129`
+- **Target Account:** `Oluwatobi`
+- **Classification:** Simulated Brute-Force Activity
+- **Disposition:** Authorized Lab Simulation
+- **Status:** Closed
+
+## Detection Logic
+
+The detection identifies repeated Windows authentication failures associated with the same account and source network address.
+
+Events are grouped into 5-minute time buckets, and the detection returns results when 5 or more failed authentication attempts occur within a bucket.
+
+```spl
+index=* sourcetype="WinEventLog:Security" EventCode=4625
+| bin _time span=5m
+| stats count as Failed_Attempts by _time Account_Name Source_Network_Address
+| where Failed_Attempts >= 5
+| sort - Failed_Attempts
+```
 
 ## Findings
+
 Splunk identified repeated failed authentication attempts originating from:
 
-- Source IP: 192.168.106.129
-- Target account: Oluwatobi
-- Failed attempts observed: 11
-- Windows Event ID: 4625
+- **Source IP:** `192.168.106.129`
+- **Target Account:** `Oluwatobi`
+- **Windows Event ID:** `4625`
 
-The repeated authentication failures from the same source are consistent with brute-force behavior generated during the lab simulation.
+The repeated authentication failures met the detection threshold and were identified by the brute-force detection rule.
+
+## Investigation and Analysis
+
+The investigation focused on the frequency of failed authentication attempts, the target account, and the originating source network address.
+
+The events showed repeated failed authentication activity associated with the same source and account within a short period.
+
+Because the activity was intentionally generated as part of the Home SOC Lab, it was determined to be an authorized security test rather than an actual compromise.
+
+## MITRE ATT&CK Mapping
+
+- **Tactic:** Credential Access
+- **Technique:** Brute Force
+- **Technique ID:** T1110
 
 ## Evidence
-Screenshot:
 
-`../screenshots/brute-force-detection-splunk.png`
+![Brute-Force Detection in Splunk](../screenshots/brute-force-detection-splunk.png)
 
 ## Response / Remediation
-In a real environment, an analyst should investigate the source IP, review additional authentication activity, determine whether any login eventually succeeded, consider blocking the malicious source, and apply account lockout or other authentication protections where appropriate.
 
-## Conclusion
-The simulation successfully demonstrated the process of generating suspicious authentication activity, collecting Windows Security logs, analyzing the events in Splunk, and creating a reusable detection rule for repeated failed logins.
+Because this activity was an authorized lab simulation, no remediation was required.
+
+In a real environment, an analyst would investigate the source of the failed authentication attempts, review related authentication activity, determine whether any login attempts eventually succeeded, and evaluate appropriate account or source-based protections.
+
+## Analyst Conclusion
+
+The simulated authentication activity was successfully collected through Windows Security logging and detected in Splunk using a reusable SPL detection rule.
+
+The investigation demonstrated the process of identifying repeated authentication failures, analyzing the associated account and source network address, mapping the activity to MITRE ATT&CK, and documenting the findings.
+
+**Final Disposition:** Authorized Lab Simulation — No Compromise Identified
