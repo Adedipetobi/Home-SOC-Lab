@@ -74,11 +74,13 @@ Windows Security Event ID `4625` was used to identify failed authentication atte
 
 **Example SPL:**
 
+```spl
 index=* sourcetype="WinEventLog:Security" EventCode=4625
 | bin _time span=5m
 | stats count as Failed_Attempts by _time Account_Name Source_Network_Address
 | where Failed_Attempts >= 5
 | sort - Failed_Attempts
+```
 
 The detection identifies 5 or more failed Windows authentication attempts associated with the same account and source network address within a 5-minute time bucket.
 
