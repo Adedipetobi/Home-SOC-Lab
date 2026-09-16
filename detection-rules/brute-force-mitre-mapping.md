@@ -1,39 +1,45 @@
-# MITRE ATT&CK Mapping – RDP Brute Force Detection
+# MITRE ATT&CK Mapping — Brute Force Detection
 
 ## Detection
-RDP Brute Force Login Detection
+
+Windows Brute Force Login Detection
 
 ## MITRE ATT&CK Mapping
 
-- Tactic: Credential Access
-- Technique: Brute Force
-- Technique ID: T1110
+- **Tactic:** Credential Access
+- **Technique:** Brute Force
+- **Technique ID:** T1110
 
 ## Detection Method
 
-The detection monitors Windows Security Event ID 4625, which represents failed logon attempts.
+The detection monitors Windows Security Event ID `4625`, which represents failed logon attempts.
 
-Multiple failed authentication attempts from the same source IP address within a short period may indicate brute-force activity.
+Failed authentication events are grouped into **5-minute time buckets** by account name and source network address.
 
-Splunk is used to aggregate failed authentication attempts by account name and source network address.
+The detection triggers when **5 or more failed authentication attempts** are observed for the same account and source network address within a 5-minute time bucket.
 
 ## Lab Evidence
 
-During the simulation, repeated failed RDP authentication attempts were generated from the Kali Linux VM against the Windows 11 VM.
+During the lab simulation, repeated failed authentication attempts were generated against the Windows 11 VM.
 
-Splunk detected the failed authentication events and identified repeated attempts originating from:
+Splunk successfully collected the Windows Security events and identified repeated failed authentication activity.
 
-192.168.106.129
+Observed activity included failed attempts originating from:
+
+`192.168.106.129`
 
 The activity was successfully detected and investigated in the Home SOC Lab.
 
 ## Detection Query
 
-    index=* sourcetype="WinEventLog:Security" EventCode=4625
-    | stats count as Failed_Attempts by Account_Name Source_Network_Address
-    | sort - Failed_Attempts
+```spl
+index=* sourcetype="WinEventLog:Security" EventCode=4625
+| bin _time span=5m
+| stats count as Failed_Attempts by _time Account_Name Source_Network_Address
+| where Failed_Attempts >= 5
+| sort - Failed_Attempts
+```
 
 ## MITRE ATT&CK Reference
 
-T1110 – Brute Force
-Credential Access
+**T1110 — Brute Force**
