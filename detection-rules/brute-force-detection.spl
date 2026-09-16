@@ -1,4 +1,5 @@
 index=* sourcetype="WinEventLog:Security" EventCode=4625
-| stats count as Failed_Attempts by Account_Name Source_Network_Address
+| bin _time span=5m
+| stats count as Failed_Attempts by _time Account_Name Source_Network_Address
 | where Failed_Attempts >= 5
 | sort - Failed_Attempts
